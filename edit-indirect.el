@@ -93,6 +93,11 @@ end of the changed region."
   :type 'hook
   :group 'edit-indirect)
 
+(defcustom edit-indirect-naming-function (lambda () (format "*edit-indirect %s*" (buffer-name)))
+  "Naming function for indirect buffer."
+  :type 'function
+  :group 'edit-indirect)
+
 (defgroup edit-indirect-faces nil
   "Faces used in `edit-indirect'."
   :group 'edit-indirect
@@ -306,7 +311,7 @@ VARIABLE shall be a symbol."
 BEG..END is the parent buffer region to insert.
 OVERLAY is the overlay, see `edit-indirect--overlay'."
   (add-hook 'after-change-major-mode-hook #'edit-indirect--rebind-save-hooks)
-  (let ((buffer (generate-new-buffer (format "*edit-indirect %s*" (buffer-name))))
+  (let ((buffer (generate-new-buffer (funcall edit-indirect-naming-function)))
         (parent-buffer (current-buffer)))
     (overlay-put overlay 'edit-indirect-buffer buffer)
     (with-current-buffer buffer
